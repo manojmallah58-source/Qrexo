@@ -3,134 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Pro | Ultimate QR Code Generator</title>
-    <meta name="description" content="Generate professional QR codes for WiFi, UPI, vCard, Social Media, and more. Free, offline, and secure.">
+    <title>QR Studio Pro - Create in Style</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="manifest" href="manifest.json">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Lucide Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- QR Code Styling Library -->
     <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
 </head>
-<body class="dark-theme">
-    <div class="app-container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="logo-section">
-                <div class="logo-icon gradient-bg">
+<body class="dark-mode">
+
+    <!-- Background Decoration -->
+    <div class="bg-blur"></div>
+    <div class="bg-blur-2"></div>
+
+    <div class="app-wrapper">
+        <!-- Sidebar Navigation -->
+        <nav class="side-nav">
+            <div class="brand">
+                <div class="logo-box">
                     <i data-lucide="qr-code"></i>
                 </div>
-                <h1>QR<span>PRO</span></h1>
             </div>
             
-            <nav class="nav-menu">
-                <button class="nav-item active" data-type="url"><i data-lucide="link"></i> URL</button>
-                <button class="nav-item" data-type="text"><i data-lucide="align-left"></i> Text</button>
-                <button class="nav-item" data-type="wifi"><i data-lucide="wifi"></i> WiFi</button>
-                <button class="nav-item" data-type="upi"><i data-lucide="credit-card"></i> UPI Payment</button>
-                <button class="nav-item" data-type="vcard"><i data-lucide="contact"></i> vCard</button>
-                <button class="nav-item" data-type="whatsapp"><i data-lucide="message-circle"></i> WhatsApp</button>
-                <button class="nav-item" data-type="sms"><i data-lucide="message-square"></i> SMS</button>
-                <button class="nav-item" data-type="email"><i data-lucide="mail"></i> Email</button>
-                <button class="nav-item" data-type="tel"><i data-lucide="phone"></i> Phone</button>
-                <button class="nav-item" data-type="location"><i data-lucide="map-pin"></i> Location</button>
-            </nav>
-
-            <div class="sidebar-footer">
-                <button id="theme-toggle"><i data-lucide="sun"></i> <span>Light Mode</span></button>
+            <div class="menu-items">
+                <button class="menu-btn active" data-type="url" title="URL"><i data-lucide="link-2"></i><span>URL</span></button>
+                <button class="menu-btn" data-type="wifi" title="WiFi"><i data-lucide="wifi"></i><span>WiFi</span></button>
+                <button class="menu-btn" data-type="upi" title="Payment"><i data-lucide="indian-rupee"></i><span>UPI</span></button>
+                <button class="menu-btn" data-type="vcard" title="Contact"><i data-lucide="user-circle"></i><span>vCard</span></button>
+                <button class="menu-btn" data-type="text" title="Text"><i data-lucide="type"></i><span>Text</span></button>
+                <button class="menu-btn" data-type="social" title="Social"><i data-lucide="share-2"></i><span>Social</span></button>
             </div>
-        </aside>
 
-        <!-- Main Content -->
-        <main class="content">
-            <header class="top-bar">
-                <h2 id="current-title">URL QR Generator</h2>
-                <div class="top-actions">
-                    <button class="btn-icon" id="history-btn" title="History"><i data-lucide="history"></i></button>
-                    <button class="btn-icon" id="fav-btn" title="Favorites"><i data-lucide="heart"></i></button>
+            <button id="theme-toggle" class="theme-btn">
+                <i data-lucide="moon"></i>
+            </button>
+        </nav>
+
+        <main class="main-content">
+            <header class="header">
+                <div>
+                    <h1 id="page-title">Generate URL QR</h1>
+                    <p>Customize every detail for a professional look.</p>
+                </div>
+                <div class="header-actions">
+                    <button class="glass-btn" id="history-toggle"><i data-lucide="history"></i></button>
                 </div>
             </header>
 
-            <div class="generator-grid">
-                <!-- Input Panel -->
-                <section class="panel input-panel">
-                    <div id="dynamic-fields">
-                        <!-- Fields injected by JS -->
+            <div class="grid-container">
+                <!-- Editor Section -->
+                <section class="editor-card">
+                    <div id="dynamic-inputs" class="inputs-container">
+                        <!-- Inputs will be injected here -->
                     </div>
 
-                    <div class="customization-section">
-                        <h3><i data-lucide="palette"></i> Design & Colors</h3>
-                        <div class="control-group">
-                            <label>QR Color</label>
-                            <input type="color" id="qr-color" value="#ffffff">
-                        </div>
-                        <div class="control-group">
-                            <label>Background</label>
-                            <input type="color" id="bg-color" value="#00000000">
-                        </div>
-                        <div class="control-group">
-                            <label>Size (px)</label>
-                            <select id="qr-size">
-                                <option value="300">300x300</option>
-                                <option value="500" selected>500x500</option>
-                                <option value="1000">1000x1000</option>
-                            </select>
-                        </div>
-                        <div class="control-group">
-                            <label>Logo (Optional)</label>
-                            <div class="file-input-wrapper">
-                                <input type="file" id="logo-upload" accept="image/*">
-                                <button class="btn-secondary">Upload Logo</button>
+                    <div class="customizer">
+                        <div class="section-title">Design & Branding</div>
+                        <div class="control-row">
+                            <div class="control">
+                                <label>QR Color</label>
+                                <div class="color-picker-wrapper">
+                                    <input type="color" id="qr-color" value="#6366f1">
+                                </div>
                             </div>
-                            <button id="remove-logo" class="btn-link hidden">Remove Logo</button>
+                            <div class="control">
+                                <label>Background</label>
+                                <div class="color-picker-wrapper">
+                                    <input type="color" id="bg-color" value="#ffffff">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="control">
+                            <label>Logo Placement</label>
+                            <div class="upload-area" id="drop-zone">
+                                <input type="file" id="logo-input" hidden accept="image/*">
+                                <i data-lucide="image-plus"></i>
+                                <span>Upload Logo</span>
+                            </div>
                         </div>
                     </div>
                 </section>
 
-                <!-- Preview Panel -->
-                <section class="panel preview-panel">
-                    <div id="canvas-wrapper">
-                        <div id="qrcode"></div>
+                <!-- Preview Section -->
+                <section class="preview-card">
+                    <div class="qr-output-container">
+                        <div id="canvas-holder"></div>
                     </div>
                     
-                    <div class="action-buttons">
-                        <button id="download-png" class="btn-primary"><i data-lucide="download"></i> PNG</button>
-                        <button id="download-svg" class="btn-secondary"><i data-lucide="file-type-2"></i> SVG</button>
-                        <button id="copy-qr" class="btn-secondary"><i data-lucide="copy"></i> Copy</button>
-                        <button id="print-qr" class="btn-secondary"><i data-lucide="printer"></i> Print</button>
-                        <button id="share-qr" class="btn-secondary"><i data-lucide="share-2"></i> Share</button>
+                    <div class="download-grid">
+                        <button id="dl-png" class="primary-btn">
+                            <i data-lucide="download"></i> Download PNG
+                        </button>
+                        <button id="dl-svg" class="secondary-btn">
+                            <i data-lucide="file-code"></i> SVG
+                        </button>
+                        <button id="share-btn" class="secondary-btn">
+                            <i data-lucide="external-link"></i>
+                        </button>
                     </div>
                 </section>
             </div>
         </main>
-
-        <!-- Modals -->
-        <div id="history-modal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3>History</h3>
-                    <button class="close-modal">&times;</button>
-                </div>
-                <div id="history-list" class="list-container"></div>
-                <button id="clear-history" class="btn-danger">Clear All</button>
-            </div>
-        </div>
     </div>
 
-    <!-- Footer for Links -->
-    <footer class="legal-footer">
-        <a href="#" onclick="showPage('about')">About</a>
-        <a href="#" onclick="showPage('privacy')">Privacy Policy</a>
-        <a href="#" onclick="showPage('terms')">Terms</a>
-        <a href="#" onclick="showPage('contact')">Contact</a>
-    </footer>
+    <!-- Notification Toast -->
+    <div id="toast" class="toast">QR Updated Successfully!</div>
 
     <script src="script.js"></script>
-    <script>
-        // Initialize Icons
-        lucide.createIcons();
-    </script>
+    <script>lucide.createIcons();</script>
 </body>
 </html>
