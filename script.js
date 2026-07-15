@@ -1,90 +1,120 @@
+// Initialize Library
 const qrCode = new QRCodeStyling({
     width: 300,
     height: 300,
-    dotsOptions: { color: "#4f46e5", type: "extra-rounded" },
+    dotsOptions: { color: "#000000", type: "extra-rounded" },
     backgroundOptions: { color: "#ffffff" },
     imageOptions: { crossOrigin: "anonymous", margin: 10 }
 });
 
 let currentType = 'url';
 
-const fieldsData = {
-    url: [{ label: 'Website URL', id: 'inp-url', type: 'url', placeholder: 'https://example.com' }],
+// Field Data Configuration
+const fieldMap = {
+    url: [{ label: 'Website Link', id: 'f-url', type: 'url', ph: 'https://example.com' }],
     wifi: [
-        { label: 'Network SSID', id: 'wifi-s', type: 'text', placeholder: 'WiFi Name' },
-        { label: 'Password', id: 'wifi-p', type: 'password', placeholder: '••••••' }
+        { label: 'SSID / Name', id: 'f-ssid', type: 'text', ph: 'Home WiFi' },
+        { label: 'Password', id: 'f-pass', type: 'password', ph: '••••••' }
     ],
     upi: [
-        { label: 'VPA / UPI ID', id: 'upi-id', type: 'text', placeholder: 'username@upi' },
-        { label: 'Payee Name', id: 'upi-n', type: 'text', placeholder: 'Full Name' }
+        { label: 'UPI ID', id: 'f-upi', type: 'text', ph: 'payee@upi' },
+        { label: 'Name', id: 'f-name', type: 'text', ph: 'Payee Name' }
     ],
-    wa: [{ label: 'WhatsApp Number', id: 'wa-num', type: 'text', placeholder: '919876543210' }]
+    vcard: [
+        { label: 'Full Name', id: 'f-vc-n', type: 'text', ph: 'John Doe' },
+        { label: 'Phone', id: 'f-vc-p', type: 'tel', ph: '+91 00000 00000' }
+    ],
+    text: [{ label: 'Content', id: 'f-txt', type: 'textarea', ph: 'Type something...' }]
 };
 
-function renderFields(type) {
+function renderInputs(type) {
     const container = document.getElementById('fields-container');
-    const fields = fieldsData[type] || fieldsData['url'];
+    const fields = fieldMap[type] || fieldMap.url;
+    
     container.innerHTML = fields.map(f => `
         <div class="field-group">
             <label>${f.label}</label>
-            <input type="${f.type}" id="${f.id}" placeholder="${f.placeholder}" class="main-input">
+            ${f.type === 'textarea' 
+                ? `<textarea id="${f.id}" placeholder="${f.ph}"></textarea>`
+                : `<input type="${f.type}" id="${f.id}" placeholder="${f.ph}">`
+            }
         </div>
     `).join('');
 
-    container.querySelectorAll('input').forEach(i => i.addEventListener('input', generate));
+    container.querySelectorAll('input, textarea').forEach(el => {
+        el.addEventListener('input', generate);
+    });
 }
 
 function generate() {
-    let data = "";
-    if(currentType === 'url') data = document.getElementById('inp-url').value;
-    if(currentType === 'wifi') {
-        const s = document.getElementById('wifi-s').value;
-        const p = document.getElementById('wifi-p').value;
-        data = `WIFI:T:WPA;S:${s};P:${p};;`;
+    let dataString = "";
+    if(currentType === 'url') dataString = document.getElementById('f-url').value;
+    else if(currentType === 'wifi') {
+        const s = document.getElementById('f-ssid').value;
+        const p = document.getElementById('f-pass').value;
+        dataString = `WIFI:T:WPA;S:${s};P:${p};;`;
     }
-    if(currentType === 'upi') {
-        const id = document.getElementById('upi-id').value;
-        const n = document.getElementById('upi-n').value;
-        data = `upi://pay?pa=${id}&pn=${encodeURIComponent(n)}`;
+    else if(currentType === 'upi') {
+        const id = document.getElementById('f-upi').value;
+        const name = document.getElementById('f-name').value;
+        dataString = `upi://pay?pa=${id}&pn=${encodeURIComponent(name)}`;
     }
-    if(currentType === 'wa') {
-        const num = document.getElementById('wa-num').value;
-        data = `https://wa.me/${num}`;
+    else if(currentType === 'text') {
+        dataString = document.getElementById('f-txt').value;
     }
 
     qrCode.update({
-        data: data || "QR Elite",
+        data: dataString || "QR Pro",
         dotsOptions: { color: document.getElementById('qr-color').value },
         backgroundOptions: { color: document.getElementById('bg-color').value }
     });
 }
 
-// Logo Handling
-document.getElementById('logo-dropzone').onclick = () => document.getElementById('logo-file').click();
-document.getElementById('logo-file').onchange = (e) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-        qrCode.update({ image: reader.result });
-        document.getElementById('logo-preview').src = reader.result;
-        document.getElementById('logo-preview').classList.remove('hidden');
-    };
-    reader.readAsDataURL(e.target.files[0]);
-};
-
-// Nav logic
-document.querySelectorAll('.nav-pill').forEach(btn => {
+// Navigation Logic
+document.querySelectorAll('.nav-item').forEach(btn => {
     btn.onclick = () => {
-        document.querySelector('.nav-pill.active').classList.remove('active');
+        document.querySelector('.nav-item.active').classList.remove('active');
         btn.classList.add('active');
         currentType = btn.dataset.type;
-        renderFields(currentType);
+        document.getElementById('generator-title').innerText = btn.innerText + " Generator";
+        renderInputs(currentType);
         generate();
     };
 });
 
-// Download
-document.getElementById('btn-png').onclick = () => qrCode.download({ name: "qr", extension: "png" });
+// Logo Handling
+document.getElementById('logo-btn').onclick = () => document.getElementById('logo-input').click();
+document.getElementById('logo-input').onchange = (e) => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+        qrCode.update({ image: reader.result });
+        document.getElementById('logo-label').innerText = "Logo Added";
+    };
+    reader.readAsDataURL(file);
+};
 
-// Init
-renderFields('url');
-qrCode.append(document.getElementById('qrcode-canvas'));
+// Design Accordion
+function toggleDesign() {
+    const panel = document.getElementById('design-panel');
+    const chevron = document.getElementById('design-chevron');
+    panel.classList.toggle('hidden');
+    chevron.style.transform = panel.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+}
+
+// Downloads
+document.getElementById('btn-png').onclick = () => qrCode.download({ name: "qr-code", extension: "png" });
+document.getElementById('btn-svg').onclick = () => qrCode.download({ name: "qr-code", extension: "svg" });
+
+// Dark Mode
+document.getElementById('theme-toggle').onclick = () => {
+    document.body.classList.toggle('dark-theme');
+    const isDark = document.body.classList.contains('dark-theme');
+    document.getElementById('theme-toggle').innerHTML = isDark ? '<i data-lucide="sun"></i>' : '<i data-lucide="moon"></i>';
+    lucide.createIcons();
+};
+
+// Initial Render
+renderInputs('url');
+qrCode.append(document.getElementById('qr-output'));
