@@ -1,158 +1,126 @@
-// Initialize QR Code Styling
-let qrCode = new QRCodeStyling({
-    width: 500,
-    height: 500,
-    data: "https://google.com",
-    image: "",
-    dotsOptions: { color: "#ffffff", type: "rounded" },
-    backgroundOptions: { color: "#00000000" },
-    imageOptions: { crossOrigin: "anonymous", margin: 10 }
-});
-
-const qrContainer = document.getElementById("qrcode");
-const dynamicFields = document.getElementById("dynamic-fields");
-const navItems = document.querySelectorAll(".nav-item");
-const qrColorInput = document.getElementById("qr-color");
-const bgColorInput = document.getElementById("bg-color");
-const sizeSelect = document.getElementById("qr-size");
-const logoUpload = document.getElementById("logo-upload");
-
+// Configuration
 let currentType = 'url';
-
-// Field Configurations
-const fieldConfigs = {
-    url: [{ label: 'Website URL', id: 'url-input', type: 'url', placeholder: 'https://example.com' }],
-    text: [{ label: 'Your Text', id: 'text-input', type: 'textarea', placeholder: 'Enter your message...' }],
-    wifi: [
-        { label: 'Network Name (SSID)', id: 'wifi-ssid', type: 'text' },
-        { label: 'Password', id: 'wifi-pass', type: 'password' },
-        { label: 'Security', id: 'wifi-enc', type: 'select', options: ['WPA', 'WEP', 'None'] }
-    ],
-    upi: [
-        { label: 'UPI ID (VPA)', id: 'upi-id', type: 'text', placeholder: 'name@upi' },
-        { label: 'Payee Name', id: 'upi-name', type: 'text' },
-        { label: 'Amount (Optional)', id: 'upi-amount', type: 'number' }
-    ],
-    whatsapp: [
-        { label: 'Phone Number', id: 'wa-num', type: 'tel', placeholder: '919876543210' },
-        { label: 'Pre-filled Message', id: 'wa-msg', type: 'text' }
-    ],
-    vcard: [
-        { label: 'Full Name', id: 'vc-name', type: 'text' },
-        { label: 'Phone', id: 'vc-phone', type: 'tel' },
-        { label: 'Email', id: 'vc-email', type: 'email' },
-        { label: 'Company', id: 'vc-comp', type: 'text' }
-    ]
+const qrData = {
+    url: "https://google.com",
+    wifi: "WIFI:T:WPA;S:MyNetwork;P:password123;;",
+    upi: "upi://pay?pa=yours@upi&pn=Name",
+    vcard: "BEGIN:VCARD\nVERSION:3.0\nFN:Full Name\nEND:VCARD",
+    text: "Hello World",
+    social: "https://instagram.com"
 };
 
-// Functions
-function renderFields(type) {
-    const fields = fieldConfigs[type] || fieldConfigs['url'];
-    dynamicFields.innerHTML = fields.map(f => `
-        <div class="input-group">
-            <label>${f.label}</label>
-            ${f.type === 'select' 
-                ? `<select id="${f.id}">${f.options.map(o => `<option value="${o}">${o}</option>`).join('')}</select>`
-                : f.type === 'textarea'
-                ? `<textarea id="${f.id}" placeholder="${f.placeholder}"></textarea>`
-                : `<input type="${f.type}" id="${f.id}" placeholder="${f.placeholder || ''}">`
-            }
-        </div>
-    `).join('');
+// Initialize QR Library
+const qrCode = new QRCodeStyling({
+    width: 300,
+    height: 300,
+    type: "svg",
+    data: qrData.url,
+    image: "",
+    dotsOptions: { color: "#6366f1", type: "extra-rounded" },
+    backgroundOptions: { color: "#ffffff" },
+    imageOptions: { crossOrigin: "anonymous", margin: 8 }
+});
 
-    // Attach listeners to new inputs
-    dynamicFields.querySelectorAll('input, select, textarea').forEach(el => {
-        el.addEventListener('input', generateQR);
+const canvasHolder = document.getElementById("canvas-holder");
+const dynamicInputs = document.getElementById("dynamic-inputs");
+
+// Render Fields Function
+function updateInputs(type) {
+    let html = '';
+    if(type === 'url') {
+        html = `<div class="input-group"><label>Website Link</label><input type="url" id="val-url" placeholder="https://example.com" value="https://google.com"></div>`;
+    } else if(type === 'wifi') {
+        html = `
+            <div class="input-group"><label>Network Name (SSID)</label><input type="text" id="wifi-s" placeholder="Home_WiFi"></div>
+            <div class="input-group"><label>Password</label><input type="password" id="wifi-p" placeholder="••••••••"></div>
+        `;
+    } else if(type === 'upi') {
+        html = `
+            <div class="input-group"><label>UPI ID</label><input type="text" id="upi-id" placeholder="name@bank"></div>
+            <div class="input-group"><label>Merchant Name</label><input type="text" id="upi-n" placeholder="John Doe"></div>
+        `;
+    } else {
+        html = `<div class="input-group"><label>Enter Content</label><textarea id="val-gen" rows="4"></textarea></div>`;
+    }
+    
+    dynamicInputs.innerHTML = html;
+    
+    // Add event listeners to new inputs
+    dynamicInputs.querySelectorAll('input, textarea').forEach(input => {
+        input.addEventListener('input', updateQR);
     });
 }
 
-function generateQR() {
-    let data = "";
+function updateQR() {
+    let dataString = "";
     
-    switch(currentType) {
-        case 'url': data = document.getElementById('url-input').value; break;
-        case 'text': data = document.getElementById('text-input').value; break;
-        case 'wifi':
-            const ssid = document.getElementById('wifi-ssid').value;
-            const pass = document.getElementById('wifi-pass').value;
-            const enc = document.getElementById('wifi-enc').value;
-            data = `WIFI:T:${enc};S:${ssid};P:${pass};;`;
-            break;
-        case 'upi':
-            const upi = document.getElementById('upi-id').value;
-            const name = document.getElementById('upi-name').value;
-            data = `upi://pay?pa=${upi}&pn=${encodeURIComponent(name)}`;
-            break;
-        case 'whatsapp':
-            const num = document.getElementById('wa-num').value;
-            const msg = document.getElementById('wa-msg').value;
-            data = `https://wa.me/${num}?text=${encodeURIComponent(msg)}`;
-            break;
-        // Add more cases for other types...
+    if(currentType === 'url') dataString = document.getElementById('val-url').value;
+    else if(currentType === 'wifi') {
+        const s = document.getElementById('wifi-s').value;
+        const p = document.getElementById('wifi-p').value;
+        dataString = `WIFI:T:WPA;S:${s};P:${p};;`;
+    } else if(currentType === 'upi') {
+        const id = document.getElementById('upi-id').value;
+        const n = document.getElementById('upi-n').value;
+        dataString = `upi://pay?pa=${id}&pn=${encodeURIComponent(n)}`;
+    } else {
+        dataString = document.getElementById('val-gen').value;
     }
 
-    if(!data) data = "QR Pro";
-
     qrCode.update({
-        data: data,
-        dotsOptions: { color: qrColorInput.value },
-        backgroundOptions: { color: bgColorInput.value },
-        width: sizeSelect.value,
-        height: sizeSelect.value
+        data: dataString || " ",
+        dotsOptions: { color: document.getElementById('qr-color').value },
+        backgroundOptions: { color: document.getElementById('bg-color').value }
     });
 }
 
-// Nav Switch logic
-navItems.forEach(item => {
-    item.addEventListener('click', () => {
-        navItems.forEach(i => i.classList.remove('active'));
-        item.classList.add('active');
-        currentType = item.dataset.type;
-        document.getElementById('current-title').innerText = `${item.innerText} QR Generator`;
-        renderFields(currentType);
-        generateQR();
+// Navigation Logic
+document.querySelectorAll('.menu-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelector('.menu-btn.active').classList.remove('active');
+        btn.classList.add('active');
+        currentType = btn.dataset.type;
+        document.getElementById('page-title').innerText = `Generate ${currentType.toUpperCase()} QR`;
+        updateInputs(currentType);
+        updateQR();
     });
 });
 
-// Logo Upload
-logoUpload.addEventListener('change', (e) => {
+// Logo Upload Logic
+document.getElementById('drop-zone').addEventListener('click', () => document.getElementById('logo-input').click());
+document.getElementById('logo-input').addEventListener('change', (e) => {
     const file = e.target.files[0];
     const reader = new FileReader();
     reader.onload = () => {
         qrCode.update({ image: reader.result });
-        document.getElementById('remove-logo').classList.remove('hidden');
+        showToast("Logo Added!");
     };
     reader.readAsDataURL(file);
 });
 
-document.getElementById('remove-logo').addEventListener('click', () => {
-    qrCode.update({ image: "" });
-    logoUpload.value = "";
-    document.getElementById('remove-logo').classList.add('hidden');
-});
+// Color change listeners
+document.getElementById('qr-color').addEventListener('input', updateQR);
+document.getElementById('bg-color').addEventListener('input', updateQR);
 
 // Downloads
-document.getElementById('download-png').addEventListener('click', () => qrCode.download({ name: "qr-pro", extension: "png" }));
-document.getElementById('download-svg').addEventListener('click', () => qrCode.download({ name: "qr-pro", extension: "svg" }));
+document.getElementById('dl-png').addEventListener('click', () => qrCode.download({ name: "qr_pro", extension: "png" }));
+document.getElementById('dl-svg').addEventListener('click', () => qrCode.download({ name: "qr_pro", extension: "svg" }));
 
 // Theme Toggle
-const themeBtn = document.getElementById('theme-toggle');
-themeBtn.addEventListener('click', () => {
-    document.body.classList.toggle('light-theme');
-    const isLight = document.body.classList.contains('light-theme');
-    themeBtn.innerHTML = isLight ? '<i data-lucide="moon"></i> <span>Dark Mode</span>' : '<i data-lucide="sun"></i> <span>Light Mode</span>';
+document.getElementById('theme-toggle').addEventListener('click', () => {
+    document.body.classList.toggle('light-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    document.getElementById('theme-toggle').innerHTML = isDark ? '<i data-lucide="sun"></i>' : '<i data-lucide="moon"></i>';
     lucide.createIcons();
-    qrColorInput.value = isLight ? "#000000" : "#ffffff";
-    generateQR();
 });
 
-// Initial Render
-renderFields('url');
-qrCode.append(qrContainer);
-
-// History Logic (Simplified)
-function saveToHistory(data) {
-    let history = JSON.parse(localStorage.getItem('qr_history') || '[]');
-    history.unshift({ data, date: new Date().toLocaleDateString(), type: currentType });
-    localStorage.setItem('qr_history', JSON.stringify(history.slice(0, 10)));
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.innerText = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
 }
+
+// Initial Setup
+updateInputs('url');
+qrCode.append(canvasHolder);
