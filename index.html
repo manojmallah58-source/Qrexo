@@ -3,227 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Premium QR Code Generator - Create beautiful, customizable QR codes for URL, WiFi, UPI, vCard, and more. 100% client-side, offline ready.">
-    <title>QRify • Premium QR Generator</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <title>QR Pro | Ultimate QR Code Generator</title>
+    <meta name="description" content="Generate professional QR codes for WiFi, UPI, vCard, Social Media, and more. Free, offline, and secure.">
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
-    <link rel="icon" href="assets/icons/icon-192.png" type="image/png">
-    <meta name="theme-color" content="#6366f1">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- QR Code Styling Library -->
+    <script type="text/javascript" src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
 </head>
-<body>
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="logo">
-                <span class="logo-icon">📱</span>
-                <span class="logo-text">QRify</span>
+<body class="dark-theme">
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-section">
+                <div class="logo-icon gradient-bg">
+                    <i data-lucide="qr-code"></i>
+                </div>
+                <h1>QR<span>PRO</span></h1>
             </div>
             
-            <div class="nav-links">
-                <a href="#" onclick="navigateTo('home')" class="nav-link active">Generator</a>
-                <a href="#" onclick="navigateTo('history')" class="nav-link">History</a>
-                <a href="#" onclick="navigateTo('about')" class="nav-link">About</a>
-            </div>
-            
-            <div class="nav-actions">
-                <button onclick="toggleTheme()" id="theme-toggle" class="icon-btn">🌙</button>
-                <button onclick="showMenu()" class="menu-btn">☰</button>
-            </div>
-        </div>
-    </nav>
+            <nav class="nav-menu">
+                <button class="nav-item active" data-type="url"><i data-lucide="link"></i> URL</button>
+                <button class="nav-item" data-type="text"><i data-lucide="align-left"></i> Text</button>
+                <button class="nav-item" data-type="wifi"><i data-lucide="wifi"></i> WiFi</button>
+                <button class="nav-item" data-type="upi"><i data-lucide="credit-card"></i> UPI Payment</button>
+                <button class="nav-item" data-type="vcard"><i data-lucide="contact"></i> vCard</button>
+                <button class="nav-item" data-type="whatsapp"><i data-lucide="message-circle"></i> WhatsApp</button>
+                <button class="nav-item" data-type="sms"><i data-lucide="message-square"></i> SMS</button>
+                <button class="nav-item" data-type="email"><i data-lucide="mail"></i> Email</button>
+                <button class="nav-item" data-type="tel"><i data-lucide="phone"></i> Phone</button>
+                <button class="nav-item" data-type="location"><i data-lucide="map-pin"></i> Location</button>
+            </nav>
 
-    <!-- Main Container -->
-    <div class="main-container">
-        <!-- Sidebar: QR Types -->
-        <div class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <h2>QR Types</h2>
-                <input type="text" id="search-types" placeholder="Search types..." onkeyup="filterTypes()">
+            <div class="sidebar-footer">
+                <button id="theme-toggle"><i data-lucide="sun"></i> <span>Light Mode</span></button>
             </div>
-            
-            <div class="qr-types">
-                <div class="type-item active" onclick="selectType(0)" data-type="0">
-                    <span class="type-icon">🔗</span>
-                    <span>URL / Link</span>
-                </div>
-                <div class="type-item" onclick="selectType(1)" data-type="1">
-                    <span class="type-icon">📝</span>
-                    <span>Plain Text</span>
-                </div>
-                <div class="type-item" onclick="selectType(2)" data-type="2">
-                    <span class="type-icon">📶</span>
-                    <span>WiFi Network</span>
-                </div>
-                <div class="type-item" onclick="selectType(3)" data-type="3">
-                    <span class="type-icon">📞</span>
-                    <span>Phone Number</span>
-                </div>
-                <div class="type-item" onclick="selectType(4)" data-type="4">
-                    <span class="type-icon">💬</span>
-                    <span>SMS Message</span>
-                </div>
-                <div class="type-item" onclick="selectType(5)" data-type="5">
-                    <span class="type-icon">✉️</span>
-                    <span>Email</span>
-                </div>
-                <div class="type-item" onclick="selectType(6)" data-type="6">
-                    <span class="type-icon">💬</span>
-                    <span>WhatsApp</span>
-                </div>
-                <div class="type-item" onclick="selectType(7)" data-type="7">
-                    <span class="type-icon">💰</span>
-                    <span>UPI Payment</span>
-                </div>
-                <div class="type-item" onclick="selectType(8)" data-type="8">
-                    <span class="type-icon">📍</span>
-                    <span>Google Maps</span>
-                </div>
-                <div class="type-item" onclick="selectType(9)" data-type="9">
-                    <span class="type-icon">👤</span>
-                    <span>Contact (vCard)</span>
-                </div>
-                <div class="type-item" onclick="selectType(10)" data-type="10">
-                    <span class="type-icon">🌐</span>
-                    <span>Social Media</span>
-                </div>
-            </div>
-        </div>
+        </aside>
 
         <!-- Main Content -->
-        <div class="content-area" id="home-page">
-            <div class="generator-container">
-                <!-- Input Form -->
-                <div class="input-panel">
-                    <h1 class="page-title">Create Stunning QR Code</h1>
-                    
-                    <!-- Dynamic Input Fields -->
-                    <div id="input-fields">
-                        <!-- Populated by JS based on type -->
+        <main class="content">
+            <header class="top-bar">
+                <h2 id="current-title">URL QR Generator</h2>
+                <div class="top-actions">
+                    <button class="btn-icon" id="history-btn" title="History"><i data-lucide="history"></i></button>
+                    <button class="btn-icon" id="fav-btn" title="Favorites"><i data-lucide="heart"></i></button>
+                </div>
+            </header>
+
+            <div class="generator-grid">
+                <!-- Input Panel -->
+                <section class="panel input-panel">
+                    <div id="dynamic-fields">
+                        <!-- Fields injected by JS -->
                     </div>
-                    
-                    <!-- Customization -->
+
                     <div class="customization-section">
-                        <h3>Customize</h3>
-                        
-                        <div class="form-grid">
-                            <!-- Colors -->
-                            <div class="form-group">
-                                <label>QR Color</label>
-                                <div class="color-picker">
-                                    <input type="color" id="qr-color" value="#1e2937" onchange="generateQR()">
-                                    <span class="color-value">#1e2937</span>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Background</label>
-                                <div class="color-picker">
-                                    <input type="color" id="bg-color" value="#ffffff" onchange="generateQR()">
-                                    <span class="color-value">#ffffff</span>
-                                </div>
-                            </div>
-                            
-                            <!-- Size -->
-                            <div class="form-group">
-                                <label>Size (px)</label>
-                                <select id="qr-size" onchange="generateQR()">
-                                    <option value="200">200 × 200</option>
-                                    <option value="300" selected>300 × 300</option>
-                                    <option value="400">400 × 400</option>
-                                    <option value="512">512 × 512</option>
-                                </select>
-                            </div>
-                            
-                            <!-- Error Level -->
-                            <div class="form-group">
-                                <label>Error Correction</label>
-                                <select id="error-level" onchange="generateQR()">
-                                    <option value="L">Low (7%)</option>
-                                    <option value="M" selected>Medium (15%)</option>
-                                    <option value="Q">Quartile (25%)</option>
-                                    <option value="H">High (30%)</option>
-                                </select>
-                            </div>
+                        <h3><i data-lucide="palette"></i> Design & Colors</h3>
+                        <div class="control-group">
+                            <label>QR Color</label>
+                            <input type="color" id="qr-color" value="#ffffff">
                         </div>
-                        
-                        <!-- Logo Upload -->
-                        <div class="logo-upload">
-                            <label>Center Logo (optional)</label>
-                            <div class="upload-area" onclick="document.getElementById('logo-upload').click()">
-                                <input type="file" id="logo-upload" accept="image/*" style="display:none" onchange="handleLogoUpload(event)">
-                                <span class="upload-text">📤 Drop logo or click to upload</span>
+                        <div class="control-group">
+                            <label>Background</label>
+                            <input type="color" id="bg-color" value="#00000000">
+                        </div>
+                        <div class="control-group">
+                            <label>Size (px)</label>
+                            <select id="qr-size">
+                                <option value="300">300x300</option>
+                                <option value="500" selected>500x500</option>
+                                <option value="1000">1000x1000</option>
+                            </select>
+                        </div>
+                        <div class="control-group">
+                            <label>Logo (Optional)</label>
+                            <div class="file-input-wrapper">
+                                <input type="file" id="logo-upload" accept="image/*">
+                                <button class="btn-secondary">Upload Logo</button>
                             </div>
-                            <button onclick="removeLogo()" id="remove-logo-btn" style="display:none;">Remove Logo</button>
+                            <button id="remove-logo" class="btn-link hidden">Remove Logo</button>
                         </div>
                     </div>
-                </div>
-                
+                </section>
+
                 <!-- Preview Panel -->
-                <div class="preview-panel">
-                    <div class="qr-preview-card">
-                        <div id="qr-container" class="qr-container"></div>
-                        
-                        <div class="preview-actions">
-                            <button onclick="downloadPNG()" class="btn primary">⬇️ PNG</button>
-                            <button onclick="downloadSVG()" class="btn secondary">⬇️ SVG</button>
-                            <button onclick="printQR()" class="btn secondary">🖨️ Print</button>
-                            <button onclick="copyQR()" class="btn secondary">📋 Copy</button>
-                            <button onclick="shareQR()" class="btn secondary">🔗 Share</button>
-                        </div>
+                <section class="panel preview-panel">
+                    <div id="canvas-wrapper">
+                        <div id="qrcode"></div>
                     </div>
                     
-                    <div class="info">
-                        <p id="qr-data-display" class="qr-data">Your QR code is ready</p>
+                    <div class="action-buttons">
+                        <button id="download-png" class="btn-primary"><i data-lucide="download"></i> PNG</button>
+                        <button id="download-svg" class="btn-secondary"><i data-lucide="file-type-2"></i> SVG</button>
+                        <button id="copy-qr" class="btn-secondary"><i data-lucide="copy"></i> Copy</button>
+                        <button id="print-qr" class="btn-secondary"><i data-lucide="printer"></i> Print</button>
+                        <button id="share-qr" class="btn-secondary"><i data-lucide="share-2"></i> Share</button>
                     </div>
-                </div>
+                </section>
             </div>
-        </div>
-        
-        <!-- History Page -->
-        <div class="content-area hidden" id="history-page">
-            <div class="history-header">
-                <h1>QR History</h1>
-                <div class="history-controls">
-                    <input type="text" id="history-search" placeholder="Search history..." onkeyup="filterHistory()">
-                    <button onclick="clearHistory()" class="btn danger">Clear All</button>
+        </main>
+
+        <!-- Modals -->
+        <div id="history-modal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>History</h3>
+                    <button class="close-modal">&times;</button>
                 </div>
-            </div>
-            
-            <div id="history-list" class="history-grid">
-                <!-- Populated by JS -->
-            </div>
-        </div>
-        
-        <!-- About Page -->
-        <div class="content-area hidden" id="about-page">
-            <div class="about-content">
-                <h1>About QRify</h1>
-                <p>A beautiful, fully offline QR code generator built with love using pure HTML, CSS &amp; JavaScript.</p>
-                <div class="features-grid">
-                    <div class="feature">✅ 100% Client-side</div>
-                    <div class="feature">✅ Works Offline</div>
-                    <div class="feature">✅ Glassmorphism Design</div>
-                    <div class="feature">✅ PWA Ready</div>
-                </div>
-                <p>Made for creators, businesses &amp; everyday users who want premium quality QR codes instantly.</p>
+                <div id="history-list" class="list-container"></div>
+                <button id="clear-history" class="btn-danger">Clear All</button>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-links">
-            <a href="#" onclick="navigateTo('about')">About</a>
-            <a href="#" onclick="showLegal('privacy')">Privacy</a>
-            <a href="#" onclick="showLegal('terms')">Terms</a>
-            <a href="#" onclick="showLegal('disclaimer')">Disclaimer</a>
-        </div>
-        <p>&copy; 2026 QRify. All rights reserved.</p>
+    <!-- Footer for Links -->
+    <footer class="legal-footer">
+        <a href="#" onclick="showPage('about')">About</a>
+        <a href="#" onclick="showPage('privacy')">Privacy Policy</a>
+        <a href="#" onclick="showPage('terms')">Terms</a>
+        <a href="#" onclick="showPage('contact')">Contact</a>
     </footer>
 
-    <!-- Toast -->
-    <div id="toast" class="toast"></div>
-
     <script src="script.js"></script>
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+    </script>
 </body>
 </html>
