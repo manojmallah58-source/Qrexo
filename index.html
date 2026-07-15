@@ -2,105 +2,102 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QR Studio Elite | Professional QR Generator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>QR Studio Pro | Enterprise Edition</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons (Professional) -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Premium QR Library -->
     <script src="https://unpkg.com/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
 </head>
-<body class="dark-theme">
+<body class="light-theme">
 
-    <!-- Header -->
-    <header class="main-header">
-        <div class="header-container">
-            <div class="brand">
-                <div class="logo-circle"><i data-lucide="qr-code"></i></div>
-                <span>QR Studio <span>Elite</span></span>
+    <div class="app-container">
+        <!-- Top Header -->
+        <header class="app-header">
+            <div class="logo-area">
+                <div class="app-icon"><i data-lucide="qr-code"></i></div>
+                <h1>QR Studio<span>Pro</span></h1>
             </div>
-            <div class="header-tools">
-                <button id="theme-toggle" class="icon-btn"><i data-lucide="sun"></i></button>
-                <button id="history-btn" class="icon-btn"><i data-lucide="history"></i></button>
+            <div class="header-btns">
+                <button id="theme-toggle" class="circle-btn"><i data-lucide="moon"></i></button>
+                <button id="history-toggle" class="circle-btn"><i data-lucide="history"></i></button>
             </div>
-        </div>
-    </header>
+        </header>
 
-    <main class="app-main">
-        <!-- Sidebar / Navigation -->
-        <nav class="type-nav">
-            <div class="nav-scroll">
-                <button class="nav-pill active" data-type="url"><i data-lucide="link"></i> URL</button>
-                <button class="nav-pill" data-type="wifi"><i data-lucide="wifi"></i> WiFi</button>
-                <button class="nav-pill" data-type="upi"><i data-lucide="credit-card"></i> UPI</button>
-                <button class="nav-pill" data-type="vcard"><i data-lucide="contact"></i> vCard</button>
-                <button class="nav-pill" data-type="wa"><i data-lucide="message-circle"></i> WhatsApp</button>
-                <button class="nav-pill" data-type="text"><i data-lucide="align-left"></i> Text</button>
-                <button class="nav-pill" data-type="sms"><i data-lucide="mail"></i> SMS</button>
-                <button class="nav-pill" data-type="tel"><i data-lucide="phone"></i> Call</button>
-            </div>
+        <!-- Main Content Scrollable -->
+        <main class="app-content">
+            <!-- QR Preview Card -->
+            <section class="preview-card animate-in">
+                <div id="qr-output" class="qr-canvas-wrapper"></div>
+                <div class="quick-actions">
+                    <button id="btn-png" class="main-download-btn">
+                        <i data-lucide="download"></i> Save Image
+                    </button>
+                    <div class="secondary-actions">
+                        <button id="btn-svg" title="Vector File"><i data-lucide="file-code"></i> SVG</button>
+                        <button id="btn-share" title="Share"><i data-lucide="share-2"></i></button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Configuration Card -->
+            <section class="editor-card animate-in-delay">
+                <h2 id="generator-title">URL Generator</h2>
+                <div id="fields-container" class="fields-grid">
+                    <!-- JS Injected Fields -->
+                </div>
+
+                <div class="accordion">
+                    <button class="accordion-trigger" onclick="toggleDesign()">
+                        <span><i data-lucide="palette"></i> Style & Branding</span>
+                        <i data-lucide="chevron-down" id="design-chevron"></i>
+                    </button>
+                    <div id="design-panel" class="design-content hidden">
+                        <div class="control-row">
+                            <div class="color-group">
+                                <label>QR Color</label>
+                                <input type="color" id="qr-color" value="#000000">
+                            </div>
+                            <div class="color-group">
+                                <label>Background</label>
+                                <input type="color" id="bg-color" value="#ffffff">
+                            </div>
+                        </div>
+                        <div class="logo-upload-field">
+                            <label>Center Logo</label>
+                            <div class="upload-box" id="logo-btn">
+                                <input type="file" id="logo-input" hidden accept="image/*">
+                                <i data-lucide="plus"></i>
+                                <span id="logo-label">Add Logo</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Bottom Tab Navigation (Mobile Friendly) -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" data-type="url"><i data-lucide="link"></i><span>URL</span></button>
+            <button class="nav-item" data-type="wifi"><i data-lucide="wifi"></i><span>WiFi</span></button>
+            <button class="nav-item" data-type="upi"><i data-lucide="credit-card"></i><span>UPI</span></button>
+            <button class="nav-item" data-type="vcard"><i data-lucide="contact"></i><span>vCard</span></button>
+            <button class="nav-item" data-type="text"><i data-lucide="align-left"></i><span>Text</span></button>
         </nav>
+    </div>
 
-        <div class="content-grid">
-            <!-- Left: Inputs -->
-            <section class="card editor-card">
-                <div class="card-header">
-                    <h3>QR Details</h3>
-                    <p>Enter the information you want to encode</p>
-                </div>
-                <div id="fields-container" class="fields-area">
-                    <!-- Fields injected here -->
-                </div>
-
-                <div class="design-section">
-                    <h4><i data-lucide="palette"></i> Style & Branding</h4>
-                    <div class="design-grid">
-                        <div class="color-field">
-                            <label>QR Color</label>
-                            <input type="color" id="qr-color" value="#4f46e5">
-                        </div>
-                        <div class="color-field">
-                            <label>Background</label>
-                            <input type="color" id="bg-color" value="#ffffff">
-                        </div>
-                    </div>
-
-                    <div class="logo-upload-box" id="logo-dropzone">
-                        <input type="file" id="logo-file" hidden accept="image/*">
-                        <div class="upload-content">
-                            <i data-lucide="image-plus"></i>
-                            <span>Add Brand Logo</span>
-                        </div>
-                        <img id="logo-preview" class="hidden">
-                        <button id="remove-logo" class="remove-btn hidden">×</button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Right: Preview -->
-            <section class="preview-sticky">
-                <div class="card preview-card">
-                    <div class="qr-frame">
-                        <div id="qrcode-canvas"></div>
-                    </div>
-                    
-                    <div class="actions-stack">
-                        <button class="btn-primary" id="btn-png">
-                            <i data-lucide="download"></i> Download PNG
-                        </button>
-                        <div class="btn-group">
-                            <button class="btn-outline" id="btn-svg"><i data-lucide="file-type"></i> SVG</button>
-                            <button class="btn-outline" id="btn-copy"><i data-lucide="copy"></i> Copy</button>
-                            <button class="btn-outline" id="btn-share"><i data-lucide="share-2"></i></button>
-                        </div>
-                    </div>
-                </div>
-            </section>
+    <!-- Modals -->
+    <div id="history-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>History</h3>
+                <button onclick="closeHistory()">×</button>
+            </div>
+            <div id="history-list"></div>
         </div>
-    </main>
-
-    <footer class="footer">
-        <p>© 2024 QR Studio Elite • Secure & Offline</p>
-    </footer>
+    </div>
 
     <script src="script.js"></script>
     <script>lucide.createIcons();</script>
